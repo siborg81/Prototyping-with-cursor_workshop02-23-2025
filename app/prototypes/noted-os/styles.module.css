@@ -1,0 +1,269 @@
+.container {
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #00bcd4 0%, #006d87 100%); /* Bondi Blue */
+  position: relative;
+  overflow: hidden;
+  font-family: "Chicago", -apple-system, system-ui, sans-serif;
+  color: #2f3542;
+}
+
+.desktop {
+  width: 100%;
+  height: calc(100% - 40px);
+  padding: 1rem;
+  position: relative;
+  background-image: 
+    radial-gradient(circle at 50% 50%, 
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.05) 50%,
+      transparent 100%
+    );
+}
+
+/* Window styles will be handled by the Window component */
+
+@font-face {
+  font-family: 'Chicago';
+  src: url('/fonts/ChicagoFLF.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Toolbar styles */
+.toolbar {
+  height: 38px;
+  background: rgba(0, 188, 212, 0.7);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  gap: 0.75rem;
+}
+
+.toolbarButton {
+  padding: 4px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.2);
+  font-size: 11px;
+  cursor: pointer;
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  color: white;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.toolbarButton:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.toolbarButton:active,
+.toolbarButton.active {
+  background: rgba(0, 0, 0, 0.1);
+  transform: translateY(1px);
+  box-shadow: 
+    0 1px 2px rgba(0, 0, 0, 0.1),
+    inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Window base styles - will be extended in Window component */
+.window {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  box-shadow: 
+    0 4px 30px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  min-width: 200px;
+  min-height: 150px;
+  transition: transform 0.2s ease;
+}
+
+.window:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.windowHeader {
+  height: 22px;
+  background: linear-gradient(180deg, 
+    rgba(0, 188, 212, 0.7) 0%,
+    rgba(0, 109, 135, 0.7) 100%
+  );
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  cursor: move;
+}
+
+.windowTitle {
+  flex: 1;
+  text-align: center;
+  font-size: 12px;
+  user-select: none;
+  color: white;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  font-weight: 600;
+}
+
+.windowControls {
+  display: flex;
+  gap: 4px;
+  margin-right: 4px;
+}
+
+.windowControl {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.1s ease;
+}
+
+.windowControl:hover {
+  transform: scale(1.1);
+}
+
+.closeButton {
+  background: linear-gradient(135deg, #ff6b6b, #ee5253);
+}
+
+.minimizeButton {
+  background: linear-gradient(135deg, #feca57, #ff9f43);
+}
+
+.maximizeButton {
+  background: linear-gradient(135deg, #1dd1a1, #10ac84);
+}
+
+.windowContent {
+  padding: 1rem;
+  height: calc(100% - 22px);
+  overflow: auto;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 0 0 8px 8px;
+}
+
+/* Text Editor styles */
+.textEditor {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 4px;
+}
+
+.textEditor .toolbar {
+  height: 32px;
+  padding: 0 8px;
+  background: rgba(0, 188, 212, 0.7);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px 4px 0 0;
+}
+
+.textEditor .toolbar button,
+.textEditor .toolbar select {
+  padding: 2px 8px;
+  margin: 0 2px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  font-size: 11px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.textEditor .toolbar button:hover,
+.textEditor .toolbar select:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.textEditor .toolbar .separator {
+  width: 1px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.3);
+  margin: 0 6px;
+}
+
+.editorContent {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  background: white;
+  outline: none;
+  font-size: 13px;
+  line-height: 1.6;
+  border-radius: 0 0 4px 4px;
+}
+
+/* Drawing Canvas styles */
+.drawingCanvas {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 4px;
+}
+
+.drawingCanvas .toolbar {
+  height: 32px;
+  padding: 0 8px;
+  background: rgba(0, 188, 212, 0.7);
+  border-radius: 4px 4px 0 0;
+}
+
+.toolButton {
+  padding: 2px 8px;
+  margin: 0 2px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  font-size: 14px;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.toolButton:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.toolButton.active {
+  background: rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.canvas {
+  flex: 1;
+  cursor: crosshair;
+  touch-action: none;
+  background: white;
+  border-radius: 0 0 4px 4px;
+} 

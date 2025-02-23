@@ -35,6 +35,16 @@ export default function Home() {
       description: 'Interactive typography effects using pure CSS, including 3D text, circular text, and variable fonts',
       path: '/prototypes/typography-experiments'
     },
+    {
+      title: 'Noted OS',
+      description: 'A nostalgic operating system-inspired note-taking app with window management, rich text editing, and drawing capabilities',
+      path: '/prototypes/noted-os'
+    },
+    {
+      title: 'My bookshelf',
+      description: 'A reading tracker powered by Notion that helps you manage and review your books',
+      path: '/prototypes/my-bookshelf'
+    },
     // Add your new prototypes here like this:
     // {
     //   title: 'Your new prototype',
