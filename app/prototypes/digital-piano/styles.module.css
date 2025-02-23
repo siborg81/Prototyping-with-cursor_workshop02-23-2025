@@ -1,0 +1,116 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #fff0f0;
+  border: 2px solid #ff9999;
+  border-radius: 8px;
+  box-shadow: 4px 4px 0 #ffcccc;
+}
+
+.main {
+  background-color: #ffefef;
+  padding: 1rem;
+  border: 1px solid #ffcccc;
+  border-radius: 4px;
+}
+
+.piano {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  margin: 2rem 0;
+  height: 200px;
+}
+
+.whiteKey {
+  width: 50px;
+  height: 200px;
+  background-color: #fff;
+  border: 1px solid #ffcccc;
+  margin: 0 2px;
+  border-radius: 0 0 4px 4px;
+  cursor: pointer;
+  transition: background-color 0.1s;
+}
+
+.whiteKey:hover, .whiteKey:active {
+  background-color: #ffe6e6;
+}
+
+.blackKey {
+  position: absolute;
+  width: 30px;
+  height: 120px;
+  background-color: #ffcccc;
+  border: 1px solid #ff9999;
+  border-radius: 0 0 4px 4px;
+  cursor: pointer;
+  z-index: 1;
+  transition: background-color 0.1s;
+}
+
+.blackKey:hover, .blackKey:active {
+  background-color: #ffb3b3;
+}
+
+.controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background-color: #fff6f6;
+  border: 1px solid #ffcccc;
+  border-radius: 4px;
+}
+
+.button {
+  padding: 0.5rem 1rem;
+  background-color: #ffcccc;
+  border: 1px solid #ff9999;
+  border-radius: 4px;
+  color: #333;
+  cursor: pointer;
+  font-family: "Chicago", system-ui;
+  box-shadow: 2px 2px 0 #ff9999;
+}
+
+.button:hover {
+  background-color: #ffb3b3;
+}
+
+.button:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 #ff9999;
+}
+
+.title {
+  text-align: center;
+  font-family: "Chicago", system-ui;
+  color: #ff6666;
+  margin-bottom: 1rem;
+}
+
+.volumeControl {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.volumeControl input {
+  width: 100px;
+}
+
+.section {
+  margin-top: 2rem;
+}
+
+.list {
+  margin-top: 1rem;
+  margin-left: 1.5rem;
+  line-height: 1.6;
+}
+
+.list li {
+  margin-bottom: 0.5rem;
+}

@@ -20,6 +20,16 @@ export default function Home() {
       description: 'Reusable components that you can use in your prototypes',
       path: '/prototypes/design-library'
     },
+    {
+      title: 'Digital Piano',
+      description: 'A retro-styled synthesizer with customizable waveforms in monochromatic pink',
+      path: '/prototypes/digital-piano'
+    },
+    {
+      title: 'Rainbow Piano',
+      description: 'A colorful synthesizer inspired by Rainbow Brite with rainbow effects',
+      path: '/prototypes/rainbow-piano'
+    },
     // Add your new prototypes here like this:
     // {
     //   title: 'Your new prototype',
