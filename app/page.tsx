@@ -30,6 +30,11 @@ export default function Home() {
       description: 'A colorful synthesizer inspired by Rainbow Brite with rainbow effects',
       path: '/prototypes/rainbow-piano'
     },
+    {
+      title: 'Typography Experiments',
+      description: 'Interactive typography effects using pure CSS, including 3D text, circular text, and variable fonts',
+      path: '/prototypes/typography-experiments'
+    },
     // Add your new prototypes here like this:
     // {
     //   title: 'Your new prototype',

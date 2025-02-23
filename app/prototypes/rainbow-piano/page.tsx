@@ -7,7 +7,7 @@
 // 3. Create an 'images' folder for your prototype's images
 // 4. Rename and customize the component and styles as needed
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import styles from './styles.module.css';
 
@@ -28,12 +28,37 @@ const NOTES: Record<string, { frequency: number; color: string }> = {
   'k': { frequency: 523.25, color: '#ff69b4' }, // C5 - Hot Pink
 };
 
+// Demo melody sequence - timing in milliseconds
+const DEMO_MELODY = [
+  { key: 'a', duration: 300 }, // C4
+  { key: 's', duration: 300 }, // D4
+  { key: 'd', duration: 300 }, // E4
+  { key: 'f', duration: 500 }, // F4
+  { key: 'f', duration: 200 }, // F4
+  { key: 'g', duration: 500 }, // G4
+  { key: 'd', duration: 300 }, // E4
+  { key: 's', duration: 300 }, // D4
+  { key: 'a', duration: 500 }, // C4
+  { key: 'h', duration: 700 }, // A4
+  { key: 'j', duration: 300 }, // B4
+  { key: 'k', duration: 800 }, // C5
+];
+
 export default function RainbowPiano() {
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [oscillators, setOscillators] = useState<Record<string, OscillatorNode>>({});
   const [volume, setVolume] = useState(0.5);
   const [waveform, setWaveform] = useState<OscillatorType>('sine');
   const [activeKeys, setActiveKeys] = useState<string[]>([]);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animationFrameRef = useRef<number | undefined>(undefined);
+  const melodyTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const waveHistoryRef = useRef<Array<{
+    key: string;
+    startTime: number;
+    opacity: number;
+  }>>([]);
 
   useEffect(() => {
     setAudioContext(new AudioContext());
@@ -97,10 +122,138 @@ export default function RainbowPiano() {
     };
   }, [handleKeyDown, handleKeyUp]);
 
+  useEffect(() => {
+    const drawWaves = () => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Set canvas size to match its display size
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+
+      // Semi-transparent background for trail effect
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const currentTime = Date.now() / 1000;
+
+      // Update wave history
+      activeKeys.forEach(key => {
+        if (!waveHistoryRef.current.some(w => w.key === key)) {
+          waveHistoryRef.current.push({
+            key,
+            startTime: currentTime,
+            opacity: 1
+          });
+        }
+      });
+
+      // Remove inactive waves gradually
+      waveHistoryRef.current = waveHistoryRef.current.filter(wave => {
+        if (!activeKeys.includes(wave.key)) {
+          wave.opacity -= 0.02; // Fade out speed
+        }
+        return wave.opacity > 0;
+      });
+
+      // Draw all waves in history
+      waveHistoryRef.current.forEach(wave => {
+        const note = NOTES[wave.key];
+        if (!note) return;
+
+        ctx.beginPath();
+        ctx.strokeStyle = `${note.color}${Math.floor(wave.opacity * 255).toString(16).padStart(2, '0')}`;
+        ctx.lineWidth = 2;
+
+        // Draw the wave with movement
+        for (let x = 0; x < canvas.width; x++) {
+          const frequency = note.frequency / 100;
+          const amplitude = 20 * volume;
+          const timeOffset = currentTime - wave.startTime;
+          
+          // Create multiple wave components for more interesting motion
+          const y = canvas.height / 2 + 
+            Math.sin(x * frequency * 0.1 + timeOffset * 5) * amplitude * Math.sin(timeOffset) +
+            Math.sin(x * frequency * 0.05 + timeOffset * 2.5) * amplitude * 0.5 * Math.cos(timeOffset * 0.5) +
+            Math.sin(x * frequency * 0.02 - timeOffset * 1.5) * amplitude * 0.3;
+
+          if (x === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+        }
+
+        ctx.stroke();
+      });
+
+      animationFrameRef.current = requestAnimationFrame(drawWaves);
+    };
+
+    drawWaves();
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [activeKeys, volume]);
+
+  const playMelody = useCallback(async () => {
+    if (!audioContext) return;
+    setIsPlaying(true);
+
+    const playNoteInMelody = (noteKey: string, duration: number) => {
+      return new Promise<void>((resolve) => {
+        const { oscillator, gainNode } = playNote(noteKey) || {};
+        if (oscillator && gainNode) {
+          setOscillators(prev => ({ ...prev, [noteKey]: oscillator }));
+          setActiveKeys(prev => [...prev, noteKey]);
+
+          melodyTimeoutRef.current = setTimeout(() => {
+            oscillator.stop();
+            setOscillators(prev => {
+              const newOscillators = { ...prev };
+              delete newOscillators[noteKey];
+              return newOscillators;
+            });
+            setActiveKeys(prev => prev.filter(k => k !== noteKey));
+            resolve();
+          }, duration);
+        } else {
+          resolve();
+        }
+      });
+    };
+
+    for (const note of DEMO_MELODY) {
+      if (!isPlaying) break;
+      await playNoteInMelody(note.key, note.duration);
+      // Add a small gap between notes
+      await new Promise(resolve => setTimeout(resolve, 50));
+    }
+
+    setIsPlaying(false);
+  }, [audioContext, isPlaying, playNote]);
+
+  const stopMelody = useCallback(() => {
+    setIsPlaying(false);
+    if (melodyTimeoutRef.current) {
+      clearTimeout(melodyTimeoutRef.current);
+    }
+    // Stop all currently playing notes
+    Object.values(oscillators).forEach(osc => osc.stop());
+    setOscillators({});
+    setActiveKeys([]);
+  }, [oscillators]);
+
   const renderPianoKeys = () => {
     const whiteKeys = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k'];
     const blackKeys = ['w', 'e', 't', 'y', 'u'];
-    const blackKeyPositions = [35, 95, 215, 275, 335]; // pixels from left
+    const blackKeyPositions = [42, 102, 222, 282, 342];
 
     return (
       <div className={styles.piano}>
@@ -196,6 +349,9 @@ export default function RainbowPiano() {
   return (
     <div className={styles.container}>
       <h1 className={`${styles.title} ${styles.rainbowText}`}>Rainbow Piano</h1>
+      <div className={styles.visualizer}>
+        <canvas ref={canvasRef} className={styles.waveCanvas} />
+      </div>
       <div className={styles.controls}>
         <div className={styles.volumeControl}>
           <label htmlFor="volume">Volume:</label>
@@ -225,6 +381,12 @@ export default function RainbowPiano() {
             <option value="triangle">Triangle</option>
           </select>
         </div>
+        <button 
+          onClick={isPlaying ? stopMelody : playMelody}
+          className={styles.button}
+        >
+          {isPlaying ? 'Stop Melody' : 'Play Melody'}
+        </button>
       </div>
       {renderPianoKeys()}
       <p style={{ 
